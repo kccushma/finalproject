@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<!--  -->
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title> Wood production on Barro Colorado Island, Panama</title>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+		<style type="text/css">
+			
+			.axis path,
+			.axis line {
+				fill: none;
+				stroke: black;
+				shape-rendering: crispEdges;
+			}
+			
+			.axis text {
+				font-family: sans-serif;
+				font-size: 11px;
+			}
+
+		</style>
+	</head>
+	<body>
+	
+<h2> TREES! </h2>
+
+	<p>
+
+A visualization of annual wood production of tropical trees. Right now, this is just a few trees.
+
+	</p>
+	
+		<script type="text/javascript">
+			dend_path = "https://bitbucket.org/kccushma/project/raw/7ce638648fa412a937d72d80ddae2bb71ee62691/DendroEx.csv"
+			d3.csv(dend_path, function(data){
+				
+				var colors = { "virginica":"blue", "versicolor":"red", "setosa":"green" }
+
+				var dataset = data.map(function(d) { 
+
+					// Manipulations of data (eg transforms, retyping) go here
+
+					// Orinal columns: "tag","stemtag","dendroID","sp","census1","crown2","illum2","lianas2","dbh1","growth"
+
+					// To get a rectangular array of the data
+					//return [ d.tag, d.stemtag, d.dendroID, d.sp, d.census1, d.crown2, d.illum2, d.lianas2, d.dbh1, d.growth ]
+
+					// To get a vector of associative arrays
+					return d;
+				});
+
+				var w = 500;
+				var h = 400;
+				var padding = 30;
+
+			var xScale = d3.scale.linear()
+								 .domain([0, d3.max(dataset, function(d) { return d["dbh1"]; })])
+								 .range([padding, w - padding * 2]);
+
+			var yScale = d3.scale.linear()
+								 //.domain([-12, 60])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["growth"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["growth"]); })])
+
+								 .range([h - padding, padding]);
+
+
+			var xAxis = d3.svg.axis()
+                  .scale(xScale)
+                  .orient("bottom")
+                  .ticks(5);
+
+            var yAxis = d3.svg.axis()
+                  .scale(yScale)
+                  .orient("left")
+                  .ticks(5);      
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+
+			svg.selectAll("circle")
+			   .data(dataset)
+			   .enter()
+			   .append("circle")
+			   .attr("fill","rgba(0,100,100,0.2)")
+			   .attr("cx", function(d) {
+			   		return xScale(d["dbh1"]);
+			   })
+			   .attr("cy",  function(d) {
+			   		return yScale(parseFloat(d["growth"]));
+			   })
+			   .attr("r", function(d) {
+			   		return 1.5*d["illum2"];
+			   });
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (h - padding) + ")")
+				.call(xAxis);
+
+			svg.append("g")
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.call(yAxis);
+				console.log(dataset)
+
+
+			});
+
+
+
+		</script>
+	</body>
+</html>
