@@ -1,31 +1,46 @@
-# Final Project
-
-## Instructions
-
-This repository is a stub for your final project. Fork it as a template for your project, and develop your code in the forked repository. For details on how to fork and turn in the project, see section 3 of the github education  [documentation](https://education.github.com/guide/forks). After you fork the repository, please enable the issue tracker in the repository settings so that others in the class (including the professor) can provide feedback.
-
-Expand on the readme questions below to provide an overview of the goals, background, and challenges for the final project. You can delete the questions as you write text that answers them, or leave the prompts in place. You can also delete this instruction section of you like.
+# KC's Final Project
 
 ## Introduction
 
-This is a final project for the [Interacting with Data](https://github.com/Brown-BIOL2430-S04-Fall2015/syllabus) seminar in fall 2015. This project (a very brief, ie 1-2 sentence, overview of the project)...
+This is a final project for the [Interacting with Data](https://github.com/Brown-BIOL2430-S04-Fall2015/syllabus) seminar in fall 2015. This project explores how local climate and species' traits influence seasonal wood production of tropical trees. 
 
-To view this project, ... (embed visualization here or provide instructions on how to view the project).
+To view this project, [click here](https://rawgit.com/kccushma/finalproject/master/KCProject.html).
 
 ## The data
 
-Description of data...
+This dataset includes measurements of seasonal wood production (diameter change) in about 2,000 trees in the 50-hectare Forest Dynamics Plot on Barro Colorado Island, Panama. Dendrometer bands were installed in 2008 and are measured two times per year, at the beginning and end of the rainy season.
 
-- Data source (simulated/ published/ unpublished?)
-- Data structure - what are the variables? How are they organized? What states can they have
+- **Data source.** These are unpublished data collected by the research group of Dr. Helene Muller-Landau at the Smithsonian Tropical Research Institute (STRI). 
+- **Data structure.**
+	- *Wood production censuses:*  During each census, we measured:
+		- diameter increment
+		- canopy illumination (1-5, with 1 having  no illumination and 5 having complete illumination)
+		- canopy condition (1-4, with 1 having severe crown damage and 4 being fully intact)
+		- canopy lianas (0-4, with 0 having no canopy lianas and 4 having lianas throughout the entire canopy)
+	- *Local climate:* Local climate data is publicaly available for the entire duration of the study from the [STRI Physical Monitoring Program](http://biogeodb.stri.si.edu/physical_monitoring/research/barrocolorado). Relevant climate variables from the Lutz watershed and meteorological tower are:
+		- evapotranspiration
+		- solar radiation
+		- soil moisture
+	- *Plant functional traits:* A local functional trait database exists for over 600 tree species on Barro Colorado Island. Data were provided by Dr. Joe Wright of STRI for:
+		- wood density
+		- maximum adult height and crown diameter
+		- leaf morphology
 
 ## Background
 
-Examples of previous visualizations of similar data or processes, if any exist... Include links or add images to markdown document... how were data mapped to aesthetics in these previous approaches? Was there filtering?
+Most previous long-term studies of wood production present plot-level growth rates averaged over long periods of time (annual or multi-year periods). For example, [Clark et al. (2013)](http://dx.doi.org/10.1002/jgrg.20067) measured wood production, along with other major carbon pools, for 12 years in a tropical wet forest in La Selva, Costa Rica. This paper maps data using a scatterplot of average wood production versus individual climate metrics that were found most important using simple linear regressions.  Studies such as [Clark and Clark (1994)](http://doi.org/10.2307/2261450) that compare species differences are often limited to a small number of species (here, six) compared to the diversity of lowland tropical forests. In this study, barplots with different patterns are used to show differences in wood production over time for each focal species. Changes in climate over time are also represented by barplots, but no visual representation combines measurements of trees and climate in a single image. 
 
-Shortcomings of previous approaches, or potentially interesting gaps between previous approaches...
+Some recent studies report wood production over finer temporal scales, such as  [Grogan and Schulze (2012)](http://dx.doi.org/10.1111/j.1744-7429.2011.00825.x). This paper uses thin lines to represent wood production trajectories for individual trees over time, and overlays those data with barplots showing precipitation for the same time period. 
+
+One limitation of previous visualizations is that they use a fixed representation of climate data, averaging climate data over time periods of weeks to years. However, the physiological processes governing wood production , such as photosynthesis and respiration, operate over much smaller temporal scales. Additionally, although there are numerous climatic metrics that are predicted to influence plant physiology, usually only one such metric is chosen for any individual data representation.
+
+Another limitiation of previous research is the representation of different species within a forest. Usually species differences are either ignored or limited to a few species, but species with different functional traits are likely to show different patterns of optimal production. 
 
 ## This project
+
+This project builds upon previous work by allowing a more flexible exploration of climate. Wood production data are limited to semiannual measurements, but this visualization will allow the viewer to choose climatic variables and how to average them.
+
+Additionally, this project will allow functional traits to be simultaneously mapped to the visualization to explore how trees with different traits might respond differently to climate variation. 
 
 ### Mapping of data to aesthetics
 
