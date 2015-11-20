@@ -32,7 +32,7 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 	</p>
 	
 		<script type="text/javascript">
-			dend_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/DendroEx.csv"
+			dend_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/FullDendroGrowth.csv"
 			d3.csv(dend_path, function(data){
 				
 				var colors = { "virginica":"blue", "versicolor":"red", "setosa":"green" }
@@ -41,7 +41,7 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 
 					// Manipulations of data (eg transforms, retyping) go here
 
-					// Orinal columns: "tag","stemtag","dendroID","sp","census1","crown2","illum2","lianas2","dbh1","growth"
+					// Orinal columns: "tag","stemtag","dendroID","species","census1","crown2","illum2","lianas2","dbh1","growth"
 
 					// To get a rectangular array of the data
 					//return [ d.tag, d.stemtag, d.dendroID, d.sp, d.census1, d.crown2, d.illum2, d.lianas2, d.dbh1, d.growth ]
@@ -60,8 +60,8 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 
 			var yScale = d3.scale.linear()
 								 //.domain([-12, 60])
-								 .domain([d3.min(dataset, function(d) { return parseFloat(d["growth"]); }), 
-								 	d3.max(dataset, function(d) { return parseFloat(d["growth"]); })])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["Growth"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["Growth"]); })])
 
 								 .range([h - padding, padding]);
 
@@ -90,10 +90,10 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 			   		return xScale(d["dbh1"]);
 			   })
 			   .attr("cy",  function(d) {
-			   		return yScale(parseFloat(d["growth"]));
+			   		return yScale(parseFloat(d["Growth"]));
 			   })
 			   .attr("r", function(d) {
-			   		return 1.5*d["illum2"];
+			   		return 1.5*d["illumination2"];
 			   });
 
 			svg.append("g")
