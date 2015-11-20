@@ -93,7 +93,7 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 			   		return yScale(parseFloat(d["Growth"]));
 			   })
 			   .attr("r", function(d) {
-			   		return 1.5*d["illumination2"];
+			   		return 0.5*d["illumination2"];
 			   });
 
 			svg.append("g")
