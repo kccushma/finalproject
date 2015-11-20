@@ -23,19 +23,17 @@
 	</head>
 	<body>
 	
-<h2> TREES! </h2>
+<h2> Interacting with Data: KC's project </h2>
 
-	<p>
+	<p><b> How do local climate and species’ traits influence seasonal wood production in a lowland tropical forest? </b></p>
 
-A visualization of annual wood production of tropical trees. Right now, this is just a few trees.
-
-	</p>
+	<p> This is a visualization of seasonal wood production data for ~ 2,000 trees in the Forest Dynamics Plot in Barro Colorado Island, Panama.</p>
 	
 		<script type="text/javascript">
 			dend_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/FullDendroGrowth.csv"
 			d3.csv(dend_path, function(data){
 				
-				var colors = { "virginica":"blue", "versicolor":"red", "setosa":"green" }
+				var colors = { "Dry":"rgba(255,150,0,0.2)", "Wet":"rgba(0,100,100,0.2)"}
 
 				var dataset = data.map(function(d) { 
 
@@ -50,19 +48,18 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 					return d;
 				});
 
-				var w = 500;
-				var h = 400;
-				var padding = 30;
+				var w = 800;
+				var h = 600;
+				var padding = 60;
 
 			var xScale = d3.scale.linear()
-								 .domain([0, d3.max(dataset, function(d) { return d["dbh1"]; })])
+								 .domain([0, d3.max(dataset, function(d) { return parseFloat(d["dbh1"]); })])
 								 .range([padding, w - padding * 2]);
 
 			var yScale = d3.scale.linear()
 								 //.domain([-12, 60])
 								 .domain([d3.min(dataset, function(d) { return parseFloat(d["Growth"]); }), 
 								 	d3.max(dataset, function(d) { return parseFloat(d["Growth"]); })])
-
 								 .range([h - padding, padding]);
 
 
@@ -85,7 +82,9 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 			   .data(dataset)
 			   .enter()
 			   .append("circle")
-			   .attr("fill","rgba(0,100,100,0.2)")
+			   .attr("fill", function(d) {
+				   	return colors[d['Season']];
+			   	})
 			   .attr("cx", function(d) {
 			   		return xScale(d["dbh1"]);
 			   })
@@ -93,18 +92,34 @@ A visualization of annual wood production of tropical trees. Right now, this is 
 			   		return yScale(parseFloat(d["Growth"]));
 			   })
 			   .attr("r", function(d) {
-			   		return 0.5*d["illumination2"];
+			   		return 0.8*d["illumination2"];
 			   });
 
-			svg.append("g")
+			svg.append("g")			// add x-axis
 				.attr("class", "axis")
 				.attr("transform", "translate(0," + (h - padding) + ")")
 				.call(xAxis);
 
-			svg.append("g")
+			svg.append("text")      // add x-axis label
+		        .attr("x", w/2 )
+		        .attr("y", h-padding/2 )
+		        .style("text-anchor", "middle")
+		        .text("Initial diameter (mm)");
+
+			svg.append("g")			// add y-axis
 				.attr("class", "axis")
 				.attr("transform", "translate(" + padding + ",0)")
 				.call(yAxis);
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .style("text-anchor", "middle")
+		        .text("Diameter growth (mm/day)");
+
+
 				console.log(dataset)
 
 
