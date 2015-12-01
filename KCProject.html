@@ -41,13 +41,13 @@
 			met_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/MetDaily.csv"
 			d3.csv(met_path, function(data){
 				
-				var colors = { "AT":"rgba(0,0,155,0.3)", "RH":"rgba(255,0,255,0.2)", "SR":"rgba(255,150,0,0.3)","PR":"rgba(0,150,150,0.3)"}
+				var colors = { "AT":"rgba(0,0,200,0.5)", "RH":"rgba(255,0,255,0.5)", "SR":"rgba(255,150,0,0.5)","PR":"rgba(0,150,150,0.5)"}
 
 				var dataset = data.map(function(d) { 
 
 					// Manipulations of data (eg transforms, retyping) go here
 
-					// Orinal columns: "AT" = Air temperature, "RH" = Relative humidity, "SR" = Solar radiation, "PR" = Precipitation
+					// Orinal columns: "JDate" = Julian Date, AT" = Air temperature, "RH" = Relative humidity, "SR" = Solar radiation, "PR" = Precipitation
 
 					// To get a rectangular array of the data
 					//return [d.AT, d.RH, d.SR, d.PR]
@@ -56,30 +56,140 @@
 					return d;
 				});
 
-				var w = 800;
-				var h = 600;
+				var w1 = 900;
+				var w = 600;
+				var h = 400;
 				var padding = 60;
 
-			var xScale = d3.scale.linear()
+
+			var xScale = d3.scale.linear() // X-scale for scatterplot
 								 .domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
 								 	d3.max(dataset, function(d) { return parseFloat(d["AT"]); })])
 								 .range([padding, w - padding * 2]);
 
-			var yScale = d3.scale.linear()
+			var yScale = d3.scale.linear() // Y-scale for scatterplot
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["RH"]); })])
+								 .range([h - padding, padding]);
+
+			var xScale1 = d3.scale.linear() //X-scale for time series
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["JDate"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["JDate"]); })])
+								 .range([padding, w1 - padding * 2]);
+
+			var yScale1a = d3.scale.linear() // First y-scale for time series
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["AT"]); })])
+								 .range([h - padding, padding]);
+
+			var yScale1b = d3.scale.linear() // Second y-scale for time series
 								 .domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
 								 	d3.max(dataset, function(d) { return parseFloat(d["RH"]); })])
 								 .range([h - padding, padding]);
 
 
-			var xAxis = d3.svg.axis()
+
+			var xAxis = d3.svg.axis() // X-axis for scatterplot
                   .scale(xScale)
                   .orient("bottom")
                   .ticks(5);
 
-            var yAxis = d3.svg.axis()
+            var yAxis = d3.svg.axis() // Y-axis for scatterplot
                   .scale(yScale)
                   .orient("left")
-                  .ticks(5);      
+                  .ticks(5);
+
+			var xAxis1 = d3.svg.axis() // X-axis for time series
+                  .scale(xScale1)
+                  .orient("bottom")
+                  .ticks(5);
+
+            var yAxis1a = d3.svg.axis() // First y-axis for time series
+                  .scale(yScale1a)
+                  .orient("left")
+                  .ticks(4);
+
+            var yAxis1b = d3.svg.axis() // Second y-axis for time series
+                  .scale(yScale1b)
+                  .orient("left")
+                  .ticks(6);
+
+			var lineFunc1a = d3.svg.line() // Create a function to draw first time series line
+			  .x(function(d) {
+			    return xScale1(parseFloat(d["JDate"]));
+			  })
+			  .y(function(d) {
+			    return yScale1a(parseFloat(d["AT"]));
+			  })
+			  .interpolate('linear');
+
+			var lineFunc1b = d3.svg.line() // Create a function to draw second time series line
+			  .x(function(d) {
+			    return xScale1(d.JDate);
+			  })
+			  .y(function(d) {
+			    return yScale1b(d.RH);
+			  })
+			  .interpolate('linear'); 
+
+
+            var svg1 = d3.select("body")
+            			 .append("svg")
+            			 .attr("width",w1)
+            			 .attr("height",h)
+
+            svg1.append('svg:path') // Draw the first time series
+			  .attr('d', lineFunc1a(dataset))
+			  .attr('stroke', colors["AT"])
+			  .attr('stroke-width', 1)
+			  .attr('fill', 'none');
+			svg1.append('svg:path') // Draw the second time series
+			  .attr('d', lineFunc1b(dataset))
+			  .attr('stroke', colors["RH"])
+			  .attr('stroke-width', 1)
+			  .attr('fill', 'none');	 			 
+
+			svg1.append("g")			// Add time series x-axis
+				.attr("class", "axis")
+				.attr("transform", "translate(0," + (h - padding) + ")")
+				.call(xAxis1);
+
+			svg1.append("text")      // Add time series x-axis label
+		        .attr("x", w1/2 )
+		        .attr("y", h-padding/2 )
+		        .style("text-anchor", "middle")
+		        .text("Julian date");
+
+			svg1.append("g")			// Add time series first y-axis
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.attr("fill",colors["AT"])
+				.call(yAxis1a);
+
+			svg1.append("text")		// Add time series first y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["AT"])
+		        .style("text-anchor", "middle")
+		        .text("Air temperature (C)");
+
+			svg1.append("g")			// Add time series second y-axis
+				.attr("class", "axis")
+				.attr("transform", "translate(" + padding + ",0)")
+				.attr("fill", colors["RH"])
+				.call(yAxis1b);
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", padding/4)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["RH"])
+		        .style("text-anchor", "middle")
+		        .text("Relative humidity (%)");
+
 
 			var svg = d3.select("body")
 						.append("svg")
@@ -97,6 +207,7 @@
 			   .attr("cy",  function(d) {
 			   		return yScale(parseFloat(d["RH"]));
 			   })
+			   .attr("r",2)
 
 			svg.append("g")			// add x-axis
 				.attr("class", "axis")
