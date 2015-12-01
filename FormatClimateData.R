@@ -43,22 +43,23 @@ setwd("~/Documents/Brown/InteractingWithData/FinalProject/finalproject")
       # Relative humidity
         RH <- RH[RH$JDate >= MinDate & RH$JDate <= MaxDate,]    
       # Air temperature
-        AT <- AT[AT$JDate >= MinDate & AT$JDate <= MaxDate,]    
+        AT <- AT[AT$JDate >= MinDate & AT$JDate <= MaxDate,]
+          AT[AT$Temp_48m==-999,"Temp_48m"] <- NA
       # Precipitation
         PR <- PR[PR$JDate >= MinDate & PR$JDate <= MaxDate,]
 
 ## Aggregate to daily averages
   # Solar radiation
-    SRdaily <- aggregate(SR$Rad, by=list(as.numeric(SR$JDate)), FUN="sum")
+    SRdaily <- aggregate(SR$Rad, by=list(as.numeric(SR$JDate)), FUN="sum", na.rm=T)
       names(SRdaily) <- c("JDate","SR")
   # Relative humidity
-    RHdaily <- aggregate.data.frame(RH$RH_48m, by=list(as.numeric(RH$JDate)), FUN="mean") 
+    RHdaily <- aggregate.data.frame(RH$RH_48m, by=list(as.numeric(RH$JDate)), FUN="mean", na.rm=T) 
       names(RHdaily) <- c("JDate","RH")
   # Air temperature
-    ATdaily <- aggregate.data.frame(AT$Temp_48m, by=list(as.numeric(AT$JDate)), FUN="mean")
+    ATdaily <- aggregate.data.frame(AT$Temp_48m, by=list(as.numeric(AT$JDate)), FUN="mean", na.rm=T)
       names(ATdaily) <- c("JDate","AT")
   # Precipitation  
-    PRdaily <- aggregate.data.frame(PR$Rain, by=list(as.numeric(PR$JDate)), FUN="sum")
+    PRdaily <- aggregate.data.frame(PR$Rain, by=list(as.numeric(PR$JDate)), FUN="sum", na.rm=T)
       names(PRdaily) <- c("JDate","PR")
 
   # Merge into one file
@@ -68,6 +69,7 @@ setwd("~/Documents/Brown/InteractingWithData/FinalProject/finalproject")
   # Fill in 0's for NA values for precipitation (when there is no precipitation, the tipping bucket measuring 
   # system does not record data and produces NA instead of 0)
     MetDaily[is.na(MetDaily$PR),'PR'] <- 0
+
 
 # Write csv
 write.csv(MetDaily, file="~/Documents/Brown/InteractingWithData/FinalProject/finalproject/MetDaily.csv",row.names=F)
