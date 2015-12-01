@@ -65,6 +65,9 @@ setwd("~/Documents/Brown/InteractingWithData/FinalProject/finalproject")
     MetDaily <- merge(SRdaily,RHdaily,by="JDate",all.x=T,all.y=T)
     MetDaily <- merge(MetDaily,ATdaily,by="JDate",all.x=T,all.y=T)
     MetDaily <- merge(MetDaily,PRdaily,by="JDate",all.x=T,all.y=T)
+  # Fill in 0's for NA values for precipitation (when there is no precipitation, the tipping bucket measuring 
+  # system does not record data and produces NA instead of 0)
+    MetDaily[is.na(MetDaily$PR),'PR'] <- 0
 
 # Write csv
 write.csv(MetDaily, file="~/Documents/Brown/InteractingWithData/FinalProject/finalproject/MetDaily.csv",row.names=F)
