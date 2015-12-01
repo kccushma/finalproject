@@ -37,11 +37,31 @@
 		</ul>
 	</p>
 	
+	<p> Select first climate variable: </p>
+
+    <div id="climate1"> <!-- Make a section with buttons to choose first climate variable-->
+        <button id="AT">Air temperature</button>
+        <button id="RH">Relative humidity</button>
+        <button id="SR">Solar radiation</button>
+        <button id="PR">Precipitation</button>
+    </div>
+
+	<p> Select second climate variable: </p>
+
+    <div id="climate2"> <!-- Make a section with buttons to choose second climate variable-->
+        <button id="AT">Air temperature</button>
+        <button id="RH">Relative humidity</button>
+        <button id="SR">Solar radiation</button>
+        <button id="PR">Precipitation</button>
+    </div>
+
 		<script type="text/javascript">
 			met_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/MetDaily.csv"
 			d3.csv(met_path, function(data){
 				
 				var colors = { "AT":"rgba(0,0,200,0.5)", "RH":"rgba(255,0,255,0.5)", "SR":"rgba(255,150,0,0.5)","PR":"rgba(0,150,150,0.5)"}
+
+				var columns = {"AT":"Air temperature (C)", "RH":"Relative humidity (%)", "SR":"Solar radiation (w/m^2)","PR":"Precipitation (mm)"}
 
 				var dataset = data.map(function(d) { 
 
@@ -61,15 +81,20 @@
 				var h = 400;
 				var padding = 60;
 
+			// Set up variable selection
+			var met1 = 	"SR";
+			var met2 = "PR";
+
+
 
 			var xScale = d3.scale.linear() // X-scale for scatterplot
-								 .domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-								 	d3.max(dataset, function(d) { return parseFloat(d["AT"]); })])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d[met1]); })])
 								 .range([padding, w - padding * 2]);
 
 			var yScale = d3.scale.linear() // Y-scale for scatterplot
-								 .domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-								 	d3.max(dataset, function(d) { return parseFloat(d["RH"]); })])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d[met2]); })])
 								 .range([h - padding, padding]);
 
 			var xScale1 = d3.scale.linear() //X-scale for time series
@@ -78,13 +103,13 @@
 								 .range([padding, w1 - padding * 2]);
 
 			var yScale1a = d3.scale.linear() // First y-scale for time series
-								 .domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-								 	d3.max(dataset, function(d) { return parseFloat(d["AT"]); })])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d[met1]); })])
 								 .range([h - padding, padding]);
 
 			var yScale1b = d3.scale.linear() // Second y-scale for time series
-								 .domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-								 	d3.max(dataset, function(d) { return parseFloat(d["RH"]); })])
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d[met2]); })])
 								 .range([h - padding, padding]);
 
 
@@ -111,7 +136,7 @@
 
             var yAxis1b = d3.svg.axis() // Second y-axis for time series
                   .scale(yScale1b)
-                  .orient("left")
+                  .orient("right")
                   .ticks(6);
 
 			var lineFunc1a = d3.svg.line() // Create a function to draw first time series line
@@ -119,16 +144,16 @@
 			    return xScale1(parseFloat(d["JDate"]));
 			  })
 			  .y(function(d) {
-			    return yScale1a(parseFloat(d["AT"]));
+			    return yScale1a(parseFloat(d[met1]));
 			  })
 			  .interpolate('linear');
 
 			var lineFunc1b = d3.svg.line() // Create a function to draw second time series line
 			  .x(function(d) {
-			    return xScale1(d.JDate);
+			    return xScale1(d["JDate"]);
 			  })
 			  .y(function(d) {
-			    return yScale1b(d.RH);
+			    return yScale1b(d[met2]);
 			  })
 			  .interpolate('linear'); 
 
@@ -140,12 +165,12 @@
 
             svg1.append('svg:path') // Draw the first time series
 			  .attr('d', lineFunc1a(dataset))
-			  .attr('stroke', colors["AT"])
+			  .attr('stroke', colors[met1])
 			  .attr('stroke-width', 1)
 			  .attr('fill', 'none');
 			svg1.append('svg:path') // Draw the second time series
 			  .attr('d', lineFunc1b(dataset))
-			  .attr('stroke', colors["RH"])
+			  .attr('stroke', colors[met2])
 			  .attr('stroke-width', 1)
 			  .attr('fill', 'none');	 			 
 
@@ -163,7 +188,7 @@
 			svg1.append("g")			// Add time series first y-axis
 				.attr("class", "axis")
 				.attr("transform", "translate(" + padding + ",0)")
-				.attr("fill",colors["AT"])
+				.attr("fill",colors[met1])
 				.call(yAxis1a);
 
 			svg1.append("text")		// Add time series first y-axis label
@@ -171,24 +196,24 @@
 		        .attr("y", 0)
 		        .attr("x",0 - (h/ 2))
 		        .attr("dy", "1em")
-		        .attr("fill",colors["AT"])
+		        .attr("fill",colors[met1])
 		        .style("text-anchor", "middle")
-		        .text("Air temperature (C)");
+		        .text(columns[met1]);
 
 			svg1.append("g")			// Add time series second y-axis
 				.attr("class", "axis")
-				.attr("transform", "translate(" + padding + ",0)")
-				.attr("fill", colors["RH"])
+				.attr("transform", "translate(" + (w1 - 2*padding) + ",0)")
+				.attr("fill", colors[met2])
 				.call(yAxis1b);
 
 			svg1.append("text")		// Add time series second y-axis label
 		        .attr("transform", "rotate(-90)")
-		        .attr("y", padding/4)
+		        .attr("y", w1-padding)
 		        .attr("x",0 - (h/ 2))
 		        .attr("dy", "1em")
-		        .attr("fill",colors["RH"])
+		        .attr("fill",colors[met2])
 		        .style("text-anchor", "middle")
-		        .text("Relative humidity (%)");
+		        .text(columns[met2]);
 
 
 			var svg = d3.select("body")
@@ -200,29 +225,34 @@
 			   .data(dataset)
 			   .enter()
 			   .append("circle")
-			   .attr("fill", "rgba(0,150,150,0.3)")
+			   .attr("fill", colors[met1])
+			   .attr("stroke", colors[met2])
 			   .attr("cx", function(d) {
-			   		return xScale(d["AT"]);
+			   		return xScale(d[met1]);
 			   })
 			   .attr("cy",  function(d) {
-			   		return yScale(parseFloat(d["RH"]));
+			   		return yScale(parseFloat(d[met2]));
 			   })
 			   .attr("r",2)
+			   .attr("stroke-width",1)
 
 			svg.append("g")			// add x-axis
 				.attr("class", "axis")
 				.attr("transform", "translate(0," + (h - padding) + ")")
+				.attr("fill",colors[met1])
 				.call(xAxis);
 
 			svg.append("text")      // add x-axis label
 		        .attr("x", w/2 )
 		        .attr("y", h-padding/2 )
+		        .attr("fill",colors[met1])
 		        .style("text-anchor", "middle")
-		        .text("Air temperature (C)");
+		        .text(columns[met1]);
 
 			svg.append("g")			// add y-axis
 				.attr("class", "axis")
 				.attr("transform", "translate(" + padding + ",0)")
+				.attr("fill",colors[met2])
 				.call(yAxis);
 
 			svg.append("text")		// add y-axis label
@@ -230,8 +260,9 @@
 		        .attr("y", 0)
 		        .attr("x",0 - (h/ 2))
 		        .attr("dy", "1em")
+		        .attr("fill",colors[met2])
 		        .style("text-anchor", "middle")
-		        .text("Relative humidity (%)");
+		        .text(columns[met2]);
 
 				console.log(dataset)
 
