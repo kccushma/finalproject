@@ -25,7 +25,7 @@
 	
 <h2> Interacting with Data: KC's project </h2>
 
-	<p><b> How do local climate and species’ traits influence seasonal wood production in a lowland tropical forest? </b></p>
+	<p><b> How are climate variables related on different time scales? </b></p>
 
 	<p> This is a visualization of climate data collected for Barro Colorado Island, Panama. 
 		All data were collected by the Smithsonian Tropical Research Institute Physical Monitoring Program and are available for download <a href="http://biogeodb.stri.si.edu/physical_monitoring/research/barrocolorado"> here </a>. Data presented in this visualization are:
@@ -245,12 +245,14 @@
 
 			svg1.append('svg:path') // Draw the time series moving average for the first time series
 			  .attr('d', movingAverageLine1a(dataset))
+			  .attr('class','patha')
 			  .attr('stroke', colors[met1])
 			  .attr('stroke-width',1)
 			  .attr('fill', 'none'); 	
 
 			svg1.append('svg:path') // Draw the time serious moving average for the first time series
 			  .attr('d', movingAverageLine1b(dataset))
+			  .attr('class','pathb')
 			  .attr('stroke', colors[met2])
 			  .attr('stroke-width',1)
 			  .attr('fill', 'none');
@@ -352,6 +354,8 @@
 
 				console.log(dataset)
 
+	// UPDATES FOR BUTTONS FOR FIRST CLIMATE VARIABLE			
+
 		d3.select("div.AT1")
        		.on("click", function(){
 
@@ -369,7 +373,7 @@
 		       .y(function(d,i) { return yScale1a(parseFloat(d["AT"])); })
 	    	   .interpolate(movingAvg(navg));			
 
-			svg1.select("path")
+			svg1.select("path.patha")
 				.attr('stroke', colors["AT"])
 				.transition()
 				.duration(1000)
@@ -439,7 +443,7 @@
 		       .y(function(d,i) { return yScale1a(parseFloat(d["RH"])); })
 	    	   .interpolate(movingAvg(navg));			
 
-			svg1.select("path")
+			svg1.select("path.patha")
 				.attr('stroke', colors["RH"])
 				.transition()
 				.duration(1000)
@@ -509,11 +513,11 @@
 		       .y(function(d,i) { return yScale1a(parseFloat(d["SR"])); })
 	    	   .interpolate(movingAvg(navg));			
 
-			svg1.select("path")
+			svg1.select("path.patha")
 				.attr('stroke', colors["SR"])
 				.transition()
 				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset))
+				.attr("d", movingAverageLine1a(dataset));
 
 			svg1.select(".y.axis")
 				    .transition()
@@ -579,11 +583,11 @@
 		       .y(function(d,i) { return yScale1a(parseFloat(d["PR"])); })
 	    	   .interpolate(movingAvg(navg));			
 
-			svg1.select("path")
+			svg1.select("path.patha")
 				.attr('stroke', colors["PR"])
 				.transition()
 				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset))
+				.attr("d", movingAverageLine1a(dataset));
 
 			svg1.select(".y.axis")
 				    .transition()
@@ -632,6 +636,75 @@
 
         }); 
 
+// Second climate variable
+		d3.select("div.AT2")
+       		.on("click", function(){
+
+			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
+
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d["AT"])); })
+	    	   .interpolate(movingAvg(navg));			
+
+			svg1.select("path")
+				.attr('stroke', colors["AT"])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset));
+
+			svg1.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["AT"])
+					.call(yAxis1b);
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cy", function(d) {
+			    return yScale(d["AT"]);
+			     })
+			    .attr("fill", colors["AT"]);
+
+			svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["AT"])
+					.call(yAxis);
+
+			svg.select("text.ytext")
+				.remove();			
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["AT"])
+		        .attr("class","ytext")
+		        .style("text-anchor", "middle")
+		        .text(columns["AT"]);	
+
+		    svg1.select("text.y2text")
+				.remove();			
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", w1-padding)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["AT"])
+		        .attr("class","y2text")		        
+		        .style("text-anchor", "middle")
+		        .text(columns[met2]);   				    
+
+        });  
 
 
 
