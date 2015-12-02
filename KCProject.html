@@ -36,24 +36,60 @@
 		  <li> <b>Precipitation.</b> Daily total from the laboratory clearning (mm). </li>
 		</ul>
 	</p>
-	
+
+ <!-- Make a section with buttons to choose first climate variable-->	
 	<p> Select first climate variable: </p>
 
-    <div id="climate1"> <!-- Make a section with buttons to choose first climate variable-->
-        <button id="AT">Air temperature</button>
-        <button id="RH">Relative humidity</button>
-        <button id="SR">Solar radiation</button>
-        <button id="PR">Precipitation</button>
-    </div>
+	<div id="AT1"> <input name= "AT1"
+	                      type="button"
+	                      value="Air temperature (C)" />
+	</div>
 
+	<div id="RH1"> <input name= "RH1"
+	                      type="button"
+	                      value="Relative humidity (%)" />
+	</div>
+
+	<div id="SR1"> <input name= "SR1"
+	                      type="button"
+	                      value="Solar radiation (w/m2)" />
+	</div>
+
+	<div id="PR1"> <input name= "PR1"
+	                      type="button"
+	                      value="Precipitation (mm)" />
+	</div>
+
+ <!-- Make a section with buttons to choose first climate variable-->
 	<p> Select second climate variable: </p>
 
-    <div id="climate2"> <!-- Make a section with buttons to choose second climate variable-->
-        <button id="AT">Air temperature</button>
-        <button id="RH">Relative humidity</button>
-        <button id="SR">Solar radiation</button>
-        <button id="PR">Precipitation</button>
-    </div>
+	<div id="AT2"> <input name= "AT2"
+	                      type="button"
+	                      value="Air temperature (C)" />
+	</div>
+
+	<div id="RH2"> <input name= "RH2"
+	                      type="button"
+	                      value="Relative humidity (%)" />
+	</div>
+
+	<div id="SR2"> <input name= "SR2"
+	                      type="button"
+	                      value="Solar radiation (w/m2)" />
+	</div>
+
+	<div id="PR2"> <input name= "PR2"
+	                      type="button"
+	                      value="Precipitation (mm)" />
+	</div>
+
+ <!-- Make a section with input field to choose number of days for moving average-->
+	<p> Select number of days for moving average: </p>
+
+	<div id="avgnum"> <input name= "avgnum"
+	                      type="input"
+	                      value="1" />
+	</div>
 
 		<script type="text/javascript">
 			met_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/MetDaily.csv"
@@ -80,9 +116,10 @@
 				var w = 600;
 				var h = 400;
 				var padding = 60;
+				var navg = 1; 
 
 			// Set up variable selection
-			var met1 = 	"SR";
+			var met1 = 	"AT";
 			var met2 = "PR";
 
 
@@ -150,32 +187,76 @@
 
 			var lineFunc1b = d3.svg.line() // Create a function to draw second time series line
 			  .x(function(d) {
-			    return xScale1(d["JDate"]);
+			    return xScale1(parseFloat(d["JDate"]));
 			  })
 			  .y(function(d) {
-			    return yScale1b(d[met2]);
+			    return yScale1b(parseFloat(d[met2]));
 			  })
 			  .interpolate('linear'); 
+
+			var movingAvg = function(n) { // Create a function to calculate a moving average
+			    return function (points) {
+			        points = points.map(function(each, index, array) {
+			            var to = index + n - 1;
+			            var subSeq, sum;
+			            if (to < points.length) {
+			                subSeq = array.slice(index, to + 1);
+			                sum = subSeq.reduce(function(a,b) { return [a[0] + b[0], a[1] + b[1]]; });
+			                return sum.map(function(each) { return each / n; });
+			            }
+			            return undefined;
+			        });
+			        points = points.filter(function(each) { return typeof each !== 'undefined' });
+			        // Transform the points into a basis line
+			        pathDesc = d3.svg.line().interpolate("basis")(points)
+			        // Remove the extra "M"
+			        return pathDesc.slice(1, pathDesc.length);
+			    };
+			};
+
+		var movingAverageLine1a = d3.svg.line()
+		   .x(function(d,i) { return xScale1(d["JDate"]); })
+	       .y(function(d,i) { return yScale1a(parseFloat(d[met1])); })
+    	   .interpolate(movingAvg(navg));
+
+		var movingAverageLine1b = d3.svg.line()
+		   .x(function(d,i) { return xScale1(d["JDate"]); })
+	       .y(function(d,i) { return yScale1b(parseFloat(d[met2])); })
+    	   .interpolate(movingAvg(navg));
 
 
             var svg1 = d3.select("body")
             			 .append("svg")
             			 .attr("width",w1)
-            			 .attr("height",h)
+            			 .attr("height",h);
 
-            svg1.append('svg:path') // Draw the first time series
-			  .attr('d', lineFunc1a(dataset))
+        //  	svg1.append('svg:path') // Draw the first time series-- old version without moving average
+		//	  .attr('d', lineFunc1a(dataset))
+		//	  .attr('stroke', colors[met1])
+		//	  .attr('stroke-width', 1)
+		//	  .attr('fill', 'none');
+
+		//   	svg1.append('svg:path') // Draw the second time series-- old version without moving average
+		//	  .attr('d', lineFunc1b(dataset))
+		//	  .attr('stroke', colors[met2])
+		//	  .attr('stroke-width', 1)
+		//	  .attr('fill', 'none');
+
+			svg1.append('svg:path') // Draw the time series moving average for the first time series
+			  .attr('d', movingAverageLine1a(dataset))
 			  .attr('stroke', colors[met1])
-			  .attr('stroke-width', 1)
-			  .attr('fill', 'none');
-			svg1.append('svg:path') // Draw the second time series
-			  .attr('d', lineFunc1b(dataset))
+			  .attr('stroke-width',1)
+			  .attr('fill', 'none'); 	
+
+			svg1.append('svg:path') // Draw the time serious moving average for the first time series
+			  .attr('d', movingAverageLine1b(dataset))
 			  .attr('stroke', colors[met2])
-			  .attr('stroke-width', 1)
-			  .attr('fill', 'none');	 			 
+			  .attr('stroke-width',1)
+			  .attr('fill', 'none');
+
 
 			svg1.append("g")			// Add time series x-axis
-				.attr("class", "axis")
+				.attr("class", "x axis")
 				.attr("transform", "translate(0," + (h - padding) + ")")
 				.call(xAxis1);
 
@@ -186,7 +267,7 @@
 		        .text("Julian date");
 
 			svg1.append("g")			// Add time series first y-axis
-				.attr("class", "axis")
+				.attr("class", "y axis")
 				.attr("transform", "translate(" + padding + ",0)")
 				.attr("fill",colors[met1])
 				.call(yAxis1a);
@@ -201,7 +282,7 @@
 		        .text(columns[met1]);
 
 			svg1.append("g")			// Add time series second y-axis
-				.attr("class", "axis")
+				.attr("class", "y axis")
 				.attr("transform", "translate(" + (w1 - 2*padding) + ",0)")
 				.attr("fill", colors[met2])
 				.call(yAxis1b);
@@ -234,10 +315,10 @@
 			   		return yScale(parseFloat(d[met2]));
 			   })
 			   .attr("r",2)
-			   .attr("stroke-width",1)
+			   .attr("stroke-width",1);
 
 			svg.append("g")			// add x-axis
-				.attr("class", "axis")
+				.attr("class", "x axis")
 				.attr("transform", "translate(0," + (h - padding) + ")")
 				.attr("fill",colors[met1])
 				.call(xAxis);
@@ -250,7 +331,7 @@
 		        .text(columns[met1]);
 
 			svg.append("g")			// add y-axis
-				.attr("class", "axis")
+				.attr("class", "y axis")
 				.attr("transform", "translate(" + padding + ",0)")
 				.attr("fill",colors[met2])
 				.call(yAxis);
@@ -269,6 +350,36 @@
 
 			});
 
+		d3.selectAll("#AT1")
+       		.on("click", function(){
+
+			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
+
+			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
+
+			svg.select(".x.axis")
+				    .transition()
+				    .duration(1000)
+					.call(xAxis);	
+
+			svg1.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+					.call(yAxis1a);	
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cx", function(d) {
+			    return xScale(d["AT"]);
+			     })
+			    .attr("fill", colors["AT"])	
+
+        });    
+		
 
 
 		</script>
