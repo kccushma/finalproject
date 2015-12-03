@@ -37,55 +37,29 @@
 		</ul>
 	</p>
 
- <!-- Make a section with buttons to choose first climate variable-->	
-	<p> Select first climate variable: </p>
+ <!-- Make a section with buttons to choose first climate variable-->
+	<p> Select first climate variable: </p> 
 
-	<div class="AT1"> <input name= "AT1"
-	                      type="button"
-	                      value="Air temperature (C)" />
-	</div>
+	<select id = "climate1">
+		<option value="AT">Air temperature</option>
+		<option value="RH">Relative humidity</option>
+		<option value="SR">Solar radiation</option>
+		<option value="PR">Precipitation</option>
+	</select>
 
-	<div class="RH1"> <input name= "RH1"
-	                      type="button"
-	                      value="Relative humidity (%)" />
-	</div>
-
-	<div class="SR1"> <input name= "SR1"
-	                      type="button"
-	                      value="Solar radiation (w/m2)" />
-	</div>
-
-	<div class="PR1"> <input name= "PR1"
-	                      type="button"
-	                      value="Precipitation (mm)" />
-	</div>
 
  <!-- Make a section with buttons to choose first climate variable-->
 	<p> Select second climate variable: </p>
 
-	<div class="AT2"> <input name= "AT2"
-	                      type="button"
-	                      value="Air temperature (C)" />
-	</div>
-
-	<div class="RH2"> <input name= "RH2"
-	                      type="button"
-	                      value="Relative humidity (%)" />
-	</div>
-
-	<div class="SR2"> <input name= "SR2"
-	                      type="button"
-	                      value="Solar radiation (w/m2)" />
-	</div>
-
-	<div class="PR2"> <input name= "PR2"
-	                      type="button"
-	                      value="Precipitation (mm)" />
-	</div>
+	<select id = "climate2">
+		<option value="AT">Air temperature</option>
+		<option value="RH">Relative humidity</option>
+		<option value="SR">Solar radiation</option>
+		<option value="PR">Precipitation</option>
+	</select>
 
  <!-- Make a section with input field to choose number of days for moving average-->
 	<p> Select number of days for moving average: </p>
-	<p>
 
 	  <label for="nRadius" 
 	         style="display: inline-block; width: 240px; text-align: right">
@@ -105,14 +79,8 @@
 
 				var dataset = data.map(function(d) { 
 
-					// Manipulations of data (eg transforms, retyping) go here
-
 					// Orinal columns: "JDate" = Julian Date, AT" = Air temperature, "RH" = Relative humidity, "SR" = Solar radiation, "PR" = Precipitation
 
-					// To get a rectangular array of the data
-					//return [d.AT, d.RH, d.SR, d.PR]
-
-					// To get a vector of associative arrays
 					return d;
 				});
 
@@ -125,9 +93,9 @@
 				var navg2 = 30; 
 
 			// Set up variable selection
-			var met1 = 	"RH";
-			var met2 = "PR";
 
+			var met1 = 	"AT";
+			var met2 = "AT";
 
 
 			var xScale = d3.scale.linear() // X-scale for scatterplot
@@ -182,24 +150,6 @@
                   .orient("right")
                   .ticks(6);
 
-		//	 var lineFunc1a = d3.svg.line() // Create a function to draw first time series line -- old version without moving average
-		//	  .x(function(d) {
-		//	    return xScale1(parseFloat(d["JDate"]));
-		//	  })
-		//	  .y(function(d) {
-		//	    return yScale1a(parseFloat(d[met1]));
-		//	  })
-		//	  .interpolate('linear');
-
-		//	var lineFunc1b = d3.svg.line() // Create a function to draw second time series line -- old version without moving average
-		//	  .x(function(d) {
-		//	    return xScale1(parseFloat(d["JDate"]));
-		//	  })
-		//	  .y(function(d) {
-		//	    return yScale1b(parseFloat(d[met2]));
-		//	  })
-		//	  .interpolate('linear'); 
-
 			var movingAvg = function(n) { // Create a function to calculate a moving average
 			    return function (points) {
 			        points = points.map(function(each, index, array) {
@@ -236,32 +186,23 @@
             			 .attr("width",w1)
             			 .attr("height",h);
 
-        //  	svg1.append('svg:path') // Draw the first time series-- old version without moving average
-		//	  .attr('d', lineFunc1a(dataset))
-		//	  .attr('stroke', colors[met1])
-		//	  .attr('stroke-width', 1)
-		//	  .attr('fill', 'none');
-
-		//   	svg1.append('svg:path') // Draw the second time series-- old version without moving average
-		//	  .attr('d', lineFunc1b(dataset))
-		//	  .attr('stroke', colors[met2])
-		//	  .attr('stroke-width', 1)
-		//	  .attr('fill', 'none');
-
-			svg1.append('svg:path') // Draw the time series moving average for the first time series
+		var path1 = svg1.append('svg:path') // Draw the time series moving average for the first time series
 			  .attr('d', movingAverageLine1a(dataset))
 			  .attr('class','patha')
 			  .attr('stroke', colors[met1])
 			  .attr('stroke-width',1)
-			  .attr('fill', 'none'); 	
+			  .attr('fill', 'none'); 
 
-			svg1.append('svg:path') // Draw the time serious moving average for the first time series
+		var path1El = path1.node();	  	
+
+		var path2 =	svg1.append('svg:path') // Draw the time serious moving average for the first time series
 			  .attr('d', movingAverageLine1b(dataset))
 			  .attr('class','pathb')
 			  .attr('stroke', colors[met2])
 			  .attr('stroke-width',1)
 			  .attr('fill', 'none');
 
+		var path2El = path2.node();	
 
 			svg1.append("g")			// Add time series x-axis
 				.attr("class", "x axis")
@@ -357,582 +298,7 @@
 		        .style("text-anchor", "middle")
 		        .text(columns[met2]);
 
-				console.log(dataset)
-
-	// UPDATES FOR BUTTONS FOR FIRST CLIMATE VARIABLE			
-
-		d3.select("div.AT1")
-       		.on("click", function(){
-
-       		var met1 = "AT";	
-
-			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
-
-			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
-
-			xAxis.scale(xScale);
-
-
-			var movingAverageLine1a = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1a(parseFloat(d["AT"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.patha")
-				.attr('stroke', colors["AT"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset))
-
-			svg1.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["AT"])
-					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    return xScale(d["AT"]);
-			     })
-			    .attr("fill", colors["AT"]);
-
-			svg.select(".x.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["AT"])
-					.call(xAxis);
-
-			svg.select("text.xtext")
-				.remove();			
-
-			svg.append("text")      // add x-axis label
-		        .attr("x", w/2 )
-		        .attr("y", h-padding/2 )
-		        .attr("fill",colors["AT"])
-		        .attr("class","xtext")
-		        .style("text-anchor", "middle")
-		        .text(columns["AT"]);	
-
-		    svg1.select("text.y1text")
-				.remove();			
-
-			svg1.append("text")		// Add time series first y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["AT"])
-		        .attr("class","y1text")
-		        .style("text-anchor", "middle")
-		        .text(columns["AT"]);    				    
-
-        });  
-
-		d3.select("div.RH1")
-       		.on("click", function(){
-
-       		var met1 = "RH";
-
-			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
-
-			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
-
-			xAxis.scale(xScale);
-
-
-			var movingAverageLine1a = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1a(parseFloat(d["RH"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.patha")
-				.attr('stroke', colors["RH"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset))
-
-			svg1.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["RH"])
-					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    return xScale(d["RH"]);
-			     })
-			    .attr("fill", colors["RH"]);
-
-			svg.select(".x.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["RH"])
-					.call(xAxis);
-
-			svg.select("text.xtext")
-				.remove();			
-
-			svg.append("text")      // add x-axis label
-		        .attr("x", w/2 )
-		        .attr("y", h-padding/2 )
-		        .attr("fill",colors["RH"])
-		        .attr("class","xtext")
-		        .style("text-anchor", "middle")
-		        .text(columns["RH"]);	
-
-		    svg1.select("text.y1text")
-				.remove();			
-
-			svg1.append("text")		// Add time series first y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["RH"])
-		        .attr("class","y1text")
-		        .style("text-anchor", "middle")
-		        .text(columns["RH"]);    				    
-
-        }); 
-
-		d3.select("div.SR1")
-       		.on("click", function(){
-
-       		var met1 = "SR";
-
-			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
-
-			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
-
-			xAxis.scale(xScale);
-
-
-			var movingAverageLine1a = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1a(parseFloat(d["SR"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.patha")
-				.attr('stroke', colors["SR"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset));
-
-			svg1.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["SR"])
-					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    return xScale(d["SR"]);
-			     })
-			    .attr("fill", colors["SR"]);
-
-			svg.select(".x.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["SR"])
-					.call(xAxis);
-
-			svg.select("text.xtext")
-				.remove();			
-
-			svg.append("text")      // add x-axis label
-		        .attr("x", w/2 )
-		        .attr("y", h-padding/2 )
-		        .attr("fill",colors["SR"])
-		        .attr("class","xtext")
-		        .style("text-anchor", "middle")
-		        .text(columns["SR"]);	
-
-		    svg1.select("text.y1text")
-				.remove();			
-
-			svg1.append("text")		// Add time series first y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["SR"])
-		        .attr("class","y1text")
-		        .style("text-anchor", "middle")
-		        .text(columns["SR"]);    				    
-
-        }); 
-
-		d3.select("div.PR1")
-       		.on("click", function(){
-
-       		var met1 = "PR";
-
-			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
-
-			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
-
-			xAxis.scale(xScale);
-
-
-			var movingAverageLine1a = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1a(parseFloat(d["PR"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.patha")
-				.attr('stroke', colors["PR"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset));
-
-			svg1.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["PR"])
-					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    return xScale(d["PR"]);
-			     })
-			    .attr("fill", colors["PR"]);
-
-			svg.select(".x.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["PR"])
-					.call(xAxis);
-
-			svg.select("text.xtext")
-				.remove();			
-
-			svg.append("text")      // add x-axis label
-		        .attr("x", w/2 )
-		        .attr("y", h-padding/2 )
-		        .attr("fill",colors["PR"])
-		        .attr("class","xtext")
-		        .style("text-anchor", "middle")
-		        .text(columns["PR"]);	
-
-		    svg1.select("text.y1text")
-				.remove();			
-
-			svg1.append("text")		// Add time series first y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["PR"])
-		        .attr("class","y1text")
-		        .style("text-anchor", "middle")
-		        .text(columns["PR"]);    				    
-
-        }); 
-
-// UPDATES FOR BUTTONS FOR SECOND CLIMATE VARIABLE
-		d3.select("div.AT2")
-       		.on("click", function(){
-
-       		var met2 = "AT";
-
-			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
-
-			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
-
-			var movingAverageLine1b = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1b(parseFloat(d["AT"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.pathb")
-				.attr('stroke', colors["AT"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1b(dataset));
-
-			svg1.select(".yb.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["AT"])
-					.call(yAxis1b);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cy", function(d) {
-			    return yScale(d["AT"]);
-			     })
-			    .attr("stroke", colors["AT"]);
-
-			svg.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["AT"])
-					.call(yAxis);
-
-			svg.select("text.ytext")
-				.remove();			
-
-			svg.append("text")		// add y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["AT"])
-		        .attr("class","ytext")
-		        .style("text-anchor", "middle")
-		        .text(columns["AT"]);	
-
-		    svg1.select("text.y2text")
-				.remove();			
-
-			svg1.append("text")		// Add time series second y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", w1-padding)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["AT"])
-		        .attr("class","y2text")		        
-		        .style("text-anchor", "middle")
-		        .text(columns["AT"]);   				    
-
-        });  
-
-		d3.select("div.RH2")
-       		.on("click", function(){
-
-       		var met2 = "RH";
-
-			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
-
-			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
-
-			var movingAverageLine1b = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1b(parseFloat(d["RH"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.pathb")
-				.attr('stroke', colors["RH"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1b(dataset));
-
-			svg1.select(".yb.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["RH"])
-					.call(yAxis1b);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cy", function(d) {
-			    return yScale(d["RH"]);
-			     })
-			    .attr("stroke", colors["RH"]);
-
-			svg.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["RH"])
-					.call(yAxis);
-
-			svg.select("text.ytext")
-				.remove();			
-
-			svg.append("text")		// add y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("stroke",colors["RH"])
-		        .attr("class","ytext")
-		        .style("text-anchor", "middle")
-		        .text(columns["RH"]);	
-
-		    svg1.select("text.y2text")
-				.remove();			
-
-			svg1.append("text")		// Add time series second y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", w1-padding)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["RH"])
-		        .attr("class","y2text")		        
-		        .style("text-anchor", "middle")
-		        .text(columns["RH"]);   				    
-
-        });  
-
-		d3.select("div.SR2")
-       		.on("click", function(){
-
-       		var met2 = "SR";
-
-			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
-
-			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
-
-			var movingAverageLine1b = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1b(parseFloat(d["SR"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.pathb")
-				.attr('stroke', colors["SR"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1b(dataset));
-
-			svg1.select(".yb.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["SR"])
-					.call(yAxis1b);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cy", function(d) {
-			    return yScale(d["SR"]);
-			     })
-			    .attr("stroke", colors["SR"]);
-
-			svg.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["SR"])
-					.call(yAxis);
-
-			svg.select("text.ytext")
-				.remove();			
-
-			svg.append("text")		// add y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["SR"])
-		        .attr("class","ytext")
-		        .style("text-anchor", "middle")
-		        .text(columns["SR"]);	
-
-		    svg1.select("text.y2text")
-				.remove();			
-
-			svg1.append("text")		// Add time series second y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", w1-padding)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["SR"])
-		        .attr("class","y2text")		        
-		        .style("text-anchor", "middle")
-		        .text(columns["SR"]);   				    
-
-        });  
-
-		d3.select("div.PR2")
-       		.on("click", function(){
-
-       		var met2 = "PR";
-
-			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
-
-			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
-
-			var movingAverageLine1b = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1b(parseFloat(d["PR"])); })
-	    	   .interpolate(movingAvg(navg));			
-
-			svg1.select("path.pathb")
-				.attr('stroke', colors["PR"])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1b(dataset));
-
-			svg1.select(".yb.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["PR"])
-					.call(yAxis1b);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cy", function(d) {
-			    return yScale(d["PR"]);
-			     })
-			    .attr("stroke", colors["PR"]);
-
-			svg.select(".y.axis")
-				    .transition()
-				    .duration(1000)
-				    .attr("fill",colors["PR"])
-					.call(yAxis);
-
-			svg.select("text.ytext")
-				.remove();			
-
-			svg.append("text")		// add y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", 0)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["PR"])
-		        .attr("class","ytext")
-		        .style("text-anchor", "middle")
-		        .text(columns["PR"]);	
-
-		    svg1.select("text.y2text")
-				.remove();			
-
-			svg1.append("text")		// Add time series second y-axis label
-		        .attr("transform", "rotate(-90)")
-		        .attr("y", w1-padding)
-		        .attr("x",0 - (h/ 2))
-		        .attr("dy", "1em")
-		        .attr("fill",colors["PR"])
-		        .attr("class","y2text")		        
-		        .style("text-anchor", "middle")
-		        .text(columns["PR"]);   				    
-
-        });
+				console.log(dataset);
 
 // UPDATE FOR RUNNING AVERAGE SLIDER
 
@@ -947,35 +313,157 @@
 		// update the elements
 		function update(nRadius) {
 
-		  // adjust the text on the range slider
-		  d3.select("#nRadius-value").text(nRadius);
-		  d3.select("#nRadius").property("value", nRadius);
+			met1 = climate1.value;
+			met2 = climate2.value;
 
-		  // update the navg variable
-			var navg = nRadius;
+			var date1Scale = d3.scale.linear()
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["JDate"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["JDate"]); })])
+								 .range([0, path1.node().getTotalLength()]);
+
+			var date2Scale = d3.scale.linear()
+								 .domain([d3.min(dataset, function(d) { return parseFloat(d["JDate"]); }), 
+								 	d3.max(dataset, function(d) { return parseFloat(d["JDate"]); })])
+								 .range([0, path2.node().getTotalLength()]);
+
+			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d[met1]); })]);
+
+			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d[met1]); })]);
 
 			var movingAverageLine1a = d3.svg.line()
 			   .x(function(d,i) { return xScale1(d["JDate"]); })
 		       .y(function(d,i) { return yScale1a(parseFloat(d[met1])); })
-	    	   .interpolate(movingAvg(navg));
+	    	   .interpolate(movingAvg(nRadius));
+
+	    	svg1.select("path.patha")
+				.attr('stroke', colors[met1])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1a(dataset)) 
+
+			svg1.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors[met1])
+					.call(yAxis1a);
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cx", function(d) {
+			    	var date1 = date1Scale(d['JDate']);
+			    	var pos = path1.node().getPointAtLength(date1);
+			    	return pos.y;
+			     })
+			    .attr("stroke", colors[met1]);
+
+			svg.select(".x.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors[met1])
+					.call(xAxis);
+
+			svg.select("text.xtext")
+				.remove();			
+
+			svg.append("text")      // add x-axis label
+		        .attr("x", w/2 )
+		        .attr("y", h-padding/2 )
+		        .attr("fill",colors[met1])
+		        .attr("class","xtext")
+		        .style("text-anchor", "middle")
+		        .text(columns[met1]);	
+
+		    svg1.select("text.y1text")
+				.remove();			
+
+			svg1.append("text")		// Add time series first y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors[met1])
+		        .attr("class","y1text")
+		        .style("text-anchor", "middle")
+		        .text(columns[met1]);  
+
+			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d[met2]); })]);
+
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d[met2]); })]);
 
 			var movingAverageLine1b = d3.svg.line()
 			   .x(function(d,i) { return xScale1(d["JDate"]); })
 		       .y(function(d,i) { return yScale1b(parseFloat(d[met2])); })
-	    	   .interpolate(movingAvg(navg));
+	    	   .interpolate(movingAvg(nRadius));			
 
-	    	svg1.select("path.patha")
+			svg1.select("path.pathb")
+				.attr('stroke', colors[met2])
 				.transition()
 				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset));
+				.attr("d", movingAverageLine1b(dataset));
 
- 			svg1.select("path.pathb")
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1b(dataset)); 	   
+			svg1.select(".yb.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors[met2])
+					.call(yAxis1b);
 
-		}
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cy", function(d) {
+			    	var date2 = date2Scale(d['JDate']);
+			    	var pos = path2.node().getPointAtLength(date2);
+			    	return pos.y;
+			     })
+			    .attr("stroke", colors[met2]);
+
+			svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors[met2])
+					.call(yAxis);
+
+			svg.select("text.ytext")
+				.remove();			
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors[met2])
+		        .attr("class","ytext")
+		        .style("text-anchor", "middle")
+		        .text(columns[met2]);	
+
+		    svg1.select("text.y2text")
+				.remove();			
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", w1-padding)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors[met2])
+		        .attr("class","y2text")		        
+		        .style("text-anchor", "middle")
+		        .text(columns[met2]); 
+
+		  // adjust the text on the range slider
+		  d3.select("#nRadius-value").text(nRadius);
+		  d3.select("#nRadius").property("value", nRadius);
+	   
+		};
+
 });		
+
 
 
 		</script>
