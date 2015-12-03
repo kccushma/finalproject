@@ -85,11 +85,15 @@
 
  <!-- Make a section with input field to choose number of days for moving average-->
 	<p> Select number of days for moving average: </p>
+	<p>
 
-	<div id="avgnum"> <input name= "avgnum"
-	                      type="input"
-	                      value="1" />
-	</div>
+	  <label for="nRadius" 
+	         style="display: inline-block; width: 240px; text-align: right">
+	         Days to average = <span id="nRadius-value">…</span>
+	  </label>
+	  <input type="range" min="1" max="365" step="1" value="1" id="nRadius">
+    </p>
+
 
 		<script type="text/javascript">
 			met_path = "https://raw.githubusercontent.com/kccushma/finalproject/master/MetDaily.csv"
@@ -117,7 +121,8 @@
 				var w = 600;
 				var h = 400;
 				var padding = 60;
-				var navg = 30; 
+				var navg = 1;
+				var navg2 = 30; 
 
 			// Set up variable selection
 			var met1 = 	"RH";
@@ -286,7 +291,7 @@
 		        .text(columns[met1]);
 
 			svg1.append("g")			// Add time series second y-axis
-				.attr("class", "y axis")
+				.attr("class", "yb axis")
 				.attr("transform", "translate(" + (w1 - 2*padding) + ",0)")
 				.attr("fill", colors[met2])
 				.call(yAxis1b);
@@ -359,6 +364,8 @@
 		d3.select("div.AT1")
        		.on("click", function(){
 
+       		var met1 = "AT";	
+
 			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
 
@@ -428,6 +435,8 @@
 
 		d3.select("div.RH1")
        		.on("click", function(){
+
+       		var met1 = "RH";
 
 			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
@@ -499,6 +508,8 @@
 		d3.select("div.SR1")
        		.on("click", function(){
 
+       		var met1 = "SR";
+
 			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
 
@@ -569,6 +580,8 @@
 		d3.select("div.PR1")
        		.on("click", function(){
 
+       		var met1 = "PR";
+
 			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
 
@@ -636,9 +649,11 @@
 
         }); 
 
-// Second climate variable
+// UPDATES FOR BUTTONS FOR SECOND CLIMATE VARIABLE
 		d3.select("div.AT2")
        		.on("click", function(){
+
+       		var met2 = "AT";
 
 			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["AT"]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d["AT"]); })]);
@@ -651,13 +666,13 @@
 		       .y(function(d,i) { return yScale1b(parseFloat(d["AT"])); })
 	    	   .interpolate(movingAvg(navg));			
 
-			svg1.select("path")
+			svg1.select("path.pathb")
 				.attr('stroke', colors["AT"])
 				.transition()
 				.duration(1000)
 				.attr("d", movingAverageLine1b(dataset));
 
-			svg1.select(".y.axis")
+			svg1.select(".yb.axis")
 				    .transition()
 				    .duration(1000)
 				    .attr("fill",colors["AT"])
@@ -670,7 +685,7 @@
 			    .attr("cy", function(d) {
 			    return yScale(d["AT"]);
 			     })
-			    .attr("fill", colors["AT"]);
+			    .attr("stroke", colors["AT"]);
 
 			svg.select(".y.axis")
 				    .transition()
@@ -702,13 +717,264 @@
 		        .attr("fill",colors["AT"])
 		        .attr("class","y2text")		        
 		        .style("text-anchor", "middle")
-		        .text(columns[met2]);   				    
+		        .text(columns["AT"]);   				    
 
         });  
 
+		d3.select("div.RH2")
+       		.on("click", function(){
 
+       		var met2 = "RH";
 
+			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
 
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["RH"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["RH"]); })]);
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d["RH"])); })
+	    	   .interpolate(movingAvg(navg));			
+
+			svg1.select("path.pathb")
+				.attr('stroke', colors["RH"])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset));
+
+			svg1.select(".yb.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["RH"])
+					.call(yAxis1b);
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cy", function(d) {
+			    return yScale(d["RH"]);
+			     })
+			    .attr("stroke", colors["RH"]);
+
+			svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["RH"])
+					.call(yAxis);
+
+			svg.select("text.ytext")
+				.remove();			
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("stroke",colors["RH"])
+		        .attr("class","ytext")
+		        .style("text-anchor", "middle")
+		        .text(columns["RH"]);	
+
+		    svg1.select("text.y2text")
+				.remove();			
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", w1-padding)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["RH"])
+		        .attr("class","y2text")		        
+		        .style("text-anchor", "middle")
+		        .text(columns["RH"]);   				    
+
+        });  
+
+		d3.select("div.SR2")
+       		.on("click", function(){
+
+       		var met2 = "SR";
+
+			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
+
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["SR"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["SR"]); })]);
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d["SR"])); })
+	    	   .interpolate(movingAvg(navg));			
+
+			svg1.select("path.pathb")
+				.attr('stroke', colors["SR"])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset));
+
+			svg1.select(".yb.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["SR"])
+					.call(yAxis1b);
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cy", function(d) {
+			    return yScale(d["SR"]);
+			     })
+			    .attr("stroke", colors["SR"]);
+
+			svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["SR"])
+					.call(yAxis);
+
+			svg.select("text.ytext")
+				.remove();			
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["SR"])
+		        .attr("class","ytext")
+		        .style("text-anchor", "middle")
+		        .text(columns["SR"]);	
+
+		    svg1.select("text.y2text")
+				.remove();			
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", w1-padding)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["SR"])
+		        .attr("class","y2text")		        
+		        .style("text-anchor", "middle")
+		        .text(columns["SR"]);   				    
+
+        });  
+
+		d3.select("div.PR2")
+       		.on("click", function(){
+
+       		var met2 = "PR";
+
+			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
+
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d["PR"]); }), 
+						   d3.max(dataset, function(d) { return parseFloat(d["PR"]); })]);
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d["PR"])); })
+	    	   .interpolate(movingAvg(navg));			
+
+			svg1.select("path.pathb")
+				.attr('stroke', colors["PR"])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset));
+
+			svg1.select(".yb.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["PR"])
+					.call(yAxis1b);
+
+			svg.selectAll("circle")
+			    .data(dataset)
+			    .transition()
+			    .duration(1000)    
+			    .attr("cy", function(d) {
+			    return yScale(d["PR"]);
+			     })
+			    .attr("stroke", colors["PR"]);
+
+			svg.select(".y.axis")
+				    .transition()
+				    .duration(1000)
+				    .attr("fill",colors["PR"])
+					.call(yAxis);
+
+			svg.select("text.ytext")
+				.remove();			
+
+			svg.append("text")		// add y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", 0)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["PR"])
+		        .attr("class","ytext")
+		        .style("text-anchor", "middle")
+		        .text(columns["PR"]);	
+
+		    svg1.select("text.y2text")
+				.remove();			
+
+			svg1.append("text")		// Add time series second y-axis label
+		        .attr("transform", "rotate(-90)")
+		        .attr("y", w1-padding)
+		        .attr("x",0 - (h/ 2))
+		        .attr("dy", "1em")
+		        .attr("fill",colors["PR"])
+		        .attr("class","y2text")		        
+		        .style("text-anchor", "middle")
+		        .text(columns["PR"]);   				    
+
+        });
+
+// UPDATE FOR RUNNING AVERAGE SLIDER
+
+		// when the input range changes update the circle 
+		d3.select("#nRadius").on("input", function() {
+		  update(+this.value);
+		});
+
+		// Initial starting value for days to average
+		update(1);
+
+		// update the elements
+		function update(nRadius) {
+
+		  // adjust the text on the range slider
+		  d3.select("#nRadius-value").text(nRadius);
+		  d3.select("#nRadius").property("value", nRadius);
+
+		  // update the navg variable
+			var navg = nRadius;
+
+			var movingAverageLine1a = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1a(parseFloat(d[met1])); })
+	    	   .interpolate(movingAvg(navg));
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(d["JDate"]); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d[met2])); })
+	    	   .interpolate(movingAvg(navg));
+
+	    	svg1.select("path.patha")
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1a(dataset));
+
+ 			svg1.select("path.pathb")
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset)); 	   
+
+		}
 });		
 
 
