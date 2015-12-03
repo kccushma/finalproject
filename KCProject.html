@@ -260,7 +260,7 @@
 			   .attr("fill", colors[met1])
 			   .attr("stroke", colors[met2])
 			   .attr("cx", function(d) {
-			   		return xScale(d[met1]);
+			   		return xScale(parseFloat(d[met1]));
 			   })
 			   .attr("cy",  function(d) {
 			   		return yScale(parseFloat(d[met2]));
@@ -348,16 +348,7 @@
 				    .duration(1000)
 				    .attr("fill",colors[met1])
 					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    	return xScale(d[met1]);
-			     })
-			    .attr("stroke", colors[met1]);
-
+ 
 			svg.select(".x.axis")
 				    .transition()
 				    .duration(1000)
@@ -414,7 +405,11 @@
 			svg.selectAll("circle")
 			    .data(dataset)
 			    .transition()
-			    .duration(1000)    
+			    .duration(1000)
+			    .attr("cx", function(d) {
+			    	return xScale(d[met1]);
+			     })
+			    .attr("fill", colors[met1])    
 			    .attr("cy", function(d) {
 			    	return yScale(d[met2]);
 			     })

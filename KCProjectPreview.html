@@ -86,7 +86,7 @@
 
 
 				var w1 = 900;
-				var w = 600;
+				var w = 520;
 				var h = 400;
 				var padding = 60;
 				var navg = 1;
@@ -143,12 +143,12 @@
             var yAxis1a = d3.svg.axis() // First y-axis for time series
                   .scale(yScale1a)
                   .orient("left")
-                  .ticks(4);
+                  .ticks(5);
 
             var yAxis1b = d3.svg.axis() // Second y-axis for time series
                   .scale(yScale1b)
                   .orient("right")
-                  .ticks(6);
+                  .ticks(5);
 
 			var movingAvg = function(n) { // Create a function to calculate a moving average
 			    return function (points) {
@@ -186,23 +186,19 @@
             			 .attr("width",w1)
             			 .attr("height",h);
 
-		var path1 = svg1.append('svg:path') // Draw the time series moving average for the first time series
+		var path1 = svg1.append('svg1:path') // Draw the time series moving average for the first time series
 			  .attr('d', movingAverageLine1a(dataset))
 			  .attr('class','patha')
 			  .attr('stroke', colors[met1])
 			  .attr('stroke-width',1)
 			  .attr('fill', 'none'); 
 
-		var path1El = path1.node();	  	
-
-		var path2 =	svg1.append('svg:path') // Draw the time serious moving average for the first time series
+		var path2 =	svg1.append('svg1:path') // Draw the time serious moving average for the first time series
 			  .attr('d', movingAverageLine1b(dataset))
 			  .attr('class','pathb')
 			  .attr('stroke', colors[met2])
 			  .attr('stroke-width',1)
 			  .attr('fill', 'none');
-
-		var path2El = path2.node();	
 
 			svg1.append("g")			// Add time series x-axis
 				.attr("class", "x axis")
@@ -316,49 +312,53 @@
 			met1 = climate1.value;
 			met2 = climate2.value;
 
+			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
+				d3.max(dataset, function(d) { return parseFloat(d[met1]); })]);
+
+			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
+				d3.max(dataset, function(d) { return parseFloat(d[met2]); })]);
+
+			var movingAverageLine1a = d3.svg.line()
+			   .x(function(d,i) { return xScale1(parseFloat(d["JDate"])); })
+		       .y(function(d,i) { return yScale1a(parseFloat(d[met1])); })
+	    	   .interpolate(movingAvg(nRadius));
+
+	    	var patha = svg1.select("path.patha")
+				.attr('stroke', colors[met1])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1a(dataset));
+
+			var movingAverageLine1b = d3.svg.line()
+			   .x(function(d,i) { return xScale1(parseFloat(d["JDate"])); })
+		       .y(function(d,i) { return yScale1b(parseFloat(d[met2])); })
+	    	   .interpolate(movingAvg(nRadius));
+
+			var pathb = svg1.select("path.pathb")
+				.attr('stroke', colors[met2])
+				.transition()
+				.duration(1000)
+				.attr("d", movingAverageLine1b(dataset));	
+
 			var date1Scale = d3.scale.linear()
 								 .domain([d3.min(dataset, function(d) { return parseFloat(d["JDate"]); }), 
 								 	d3.max(dataset, function(d) { return parseFloat(d["JDate"]); })])
-								 .range([0, path1.node().getTotalLength()]);
+								 .range([0, patha.node().getTotalLength()]);
 
 			var date2Scale = d3.scale.linear()
 								 .domain([d3.min(dataset, function(d) { return parseFloat(d["JDate"]); }), 
 								 	d3.max(dataset, function(d) { return parseFloat(d["JDate"]); })])
-								 .range([0, path2.node().getTotalLength()]);
+								 .range([0, pathb.node().getTotalLength()]);
 
 			xScale.domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d[met1]); })]);
 
-			yScale1a.domain([d3.min(dataset, function(d) { return parseFloat(d[met1]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d[met1]); })]);
-
-			var movingAverageLine1a = d3.svg.line()
-			   .x(function(d,i) { return xScale1(d["JDate"]); })
-		       .y(function(d,i) { return yScale1a(parseFloat(d[met1])); })
-	    	   .interpolate(movingAvg(nRadius));
-
-	    	svg1.select("path.patha")
-				.attr('stroke', colors[met1])
-				.transition()
-				.duration(1000)
-				.attr("d", movingAverageLine1a(dataset)) 
 
 			svg1.select(".y.axis")
 				    .transition()
 				    .duration(1000)
 				    .attr("fill",colors[met1])
 					.call(yAxis1a);
-
-			svg.selectAll("circle")
-			    .data(dataset)
-			    .transition()
-			    .duration(1000)    
-			    .attr("cx", function(d) {
-			    	var date1 = date1Scale(d['JDate']);
-			    	var pos = path1.node().getPointAtLength(date1);
-			    	return pos.y;
-			     })
-			    .attr("stroke", colors[met1]);
 
 			svg.select(".x.axis")
 				    .transition()
@@ -375,7 +375,7 @@
 		        .attr("fill",colors[met1])
 		        .attr("class","xtext")
 		        .style("text-anchor", "middle")
-		        .text(columns[met1]);	
+		        .text(columns[met1]);
 
 		    svg1.select("text.y1text")
 				.remove();			
@@ -391,9 +391,6 @@
 		        .text(columns[met1]);  
 
 			yScale.domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
-						   d3.max(dataset, function(d) { return parseFloat(d[met2]); })]);
-
-			yScale1b.domain([d3.min(dataset, function(d) { return parseFloat(d[met2]); }), 
 						   d3.max(dataset, function(d) { return parseFloat(d[met2]); })]);
 
 			var movingAverageLine1b = d3.svg.line()
@@ -416,11 +413,17 @@
 			svg.selectAll("circle")
 			    .data(dataset)
 			    .transition()
-			    .duration(1000)    
+			    .duration(1000) 
+			    .attr("cx", function(d) {
+			    	var datea = date1Scale(d['JDate']);
+			    	var posa = patha.node().getPointAtLength(datea);
+			    	return posa.y;
+			     })
+			    .attr("fill", colors[met1])   
 			    .attr("cy", function(d) {
-			    	var date2 = date2Scale(d['JDate']);
-			    	var pos = path2.node().getPointAtLength(date2);
-			    	return pos.y;
+			    	var dateb = date2Scale(d['JDate']);
+			    	var posb = pathb.node().getPointAtLength(dateb);
+			    	return posb.y;
 			     })
 			    .attr("stroke", colors[met2]);
 

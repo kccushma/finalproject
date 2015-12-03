@@ -69,6 +69,8 @@ setwd("~/Documents/Brown/InteractingWithData/FinalProject/finalproject")
   # Fill in 0's for NA values for precipitation (when there is no precipitation, the tipping bucket measuring 
   # system does not record data and produces NA instead of 0)
     MetDaily[is.na(MetDaily$PR),'PR'] <- 0
+  # Remove 2 NA values for temperature, because they seem to mess up the line plots in D3
+    MetDaily <- MetDaily[!is.na(MetDaily$AT),]
 
 
 # Write csv
