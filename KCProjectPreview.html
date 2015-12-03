@@ -354,7 +354,9 @@
 			    .transition()
 			    .duration(1000)    
 			    .attr("cx", function(d) {
-			    	return xScale(d[met1]);
+			    	var date1 = date1Scale(d['JDate']);
+			    	var pos = path1.node().getPointAtLength(date1);
+			    	return pos.y;
 			     })
 			    .attr("stroke", colors[met1]);
 
@@ -416,7 +418,9 @@
 			    .transition()
 			    .duration(1000)    
 			    .attr("cy", function(d) {
-			    	return yScale(d[met2]);
+			    	var date2 = date2Scale(d['JDate']);
+			    	var pos = path2.node().getPointAtLength(date2);
+			    	return pos.y;
 			     })
 			    .attr("stroke", colors[met2]);
 
