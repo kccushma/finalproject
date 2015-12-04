@@ -66,7 +66,7 @@ This visualization allows the user some flexibility in exploring time scales and
 
 ## Assessment
 
-The new visualization is somewhat successful at providing insight into the how time scale influences relationships among variables. Thiis is especially clear looking at solar radiation versus relative humidity. The relationship is pretty clear but noisy at the daily scale, very clear at the scale of about 80 days, and practically nonexistent at the yearly scale. 
+The new visualization is somewhat successful at providing insight into the how time scale influences relationships among variables. This is especially clear looking at solar radiation versus relative humidity. The relationship is pretty clear but noisy at the daily scale, very clear at the scale of about 80 days, and practically nonexistent at the yearly scale. 
 
 One limitation is that this visualization still only allows the user to explore two variables simultaneously. It would be interesting to expand this into more dimensions, such as to see if the PCA axes change depending on time scale. 
 
