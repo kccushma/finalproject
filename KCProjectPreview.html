@@ -33,7 +33,7 @@
 		  <li> <b>Air temperature.</b> Daily averages from Lutz tower at 48 m (Celsius). </li>
 		  <li> <b>Relative humidity.</b> Daily averages from Lutz tower at 48 m (%). </li>
 		  <li> <b>Solar radiation.</b> Daily total from Lutz tower at 48 m (w/m^2). </li>
-		  <li> <b>Precipitation.</b> Daily total from the laboratory clearning (mm). </li>
+		  <li> <b>Precipitation.</b> Daily total from the laboratory clearing (mm). </li>
 		</ul>
 	</p>
 
@@ -417,7 +417,7 @@
 			    .attr("cx", function(d) {
 			    	var datea = date1Scale(d['JDate']);
 			    	var posa = patha.node().getPointAtLength(datea);
-			    	return posa.y;
+			    	return (h-posa.y);
 			     })
 			    .attr("fill", colors[met1])   
 			    .attr("cy", function(d) {
